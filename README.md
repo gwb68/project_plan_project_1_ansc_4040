@@ -1,8 +1,7 @@
-# project_plan_project_1_ansc_4040
 # Project Plan: Filling Missing Dairy Milk Production Data
 
 **Course:** ANSC 4040 — Mini Project  
-**Project Timeline:** September 15 – November 24, 2026  
+**Project Timeline:** September 15 – October 6, 2026  
 **Development Environment:** Local computer using Visual Studio Code (VS Code) and Python
 
 ## Project Purpose
@@ -21,12 +20,13 @@ For longer gaps, I will compare other methods, such as using the cow's average p
 
 | Date | Project Task |
 |---|---|
-| September 15–22 | Understand and prepare the data. Identify the dataset, inspect its columns, locate null values, and organize records by cow ID and date. |
-| September 23–29 | Explore the data. Analyze individual cow milk production patterns, examine missing-data gaps, and create visualizations. |
-| September 30–October 13 | Develop the filling strategy. Create a baseline using cow-level averages and test interpolation for short gaps. Investigate regression or other prediction methods for longer gaps. |
-| October 14–27 | Test and compare models. Hide known milk production values, predict them using each method, and compare the estimates with the actual values. |
-| October 28–November 10 | Finalize the data pipeline. Apply the selected method to the actual missing records, document the process, and preserve the original data. |
-| November 11–24 | Evaluate and present the project. Review the results, create final visualizations, explain limitations, and prepare the final report or presentation. |
+| September 15–16 | Understand and prepare the data. Identify the dataset, inspect its columns, locate null values, and organize records by cow ID and date. |
+| September 17–18 | Explore the data. Analyze individual cow milk production patterns, examine missing-data gaps, and create visualizations. |
+| September 19–22 | Develop the filling strategy. Create a baseline using cow-level averages and test interpolation for short gaps. Investigate regression or other prediction methods for longer gaps. |
+| September 23–26 | Test and compare models. Hide known milk production values, predict them using each method, and compare the estimates with the actual values. |
+| September 27–30 | Finalize the data pipeline. Apply the selected method to the actual missing records, document the process, and preserve the original data. |
+| October 1–5 | Review the results, create final visualizations, explain limitations, and prepare the final report or presentation. |
+| October 6 | Submit the completed mini project. |
 
 ## Testing
 
@@ -42,4 +42,4 @@ Each estimated milk production value will be labeled as an estimate rather than 
 
 ## Expected Outcome
 
-By November 24, I expect to have a reproducible Python workflow in Visual Studio Code that identifies missing milk production records, fills gaps using an appropriate prediction method, and evaluates the accuracy of the results. The final project will also explain the strengths and limitations of the chosen method and provide a clear record of how the original data was processed.
+By October 6, I expect to have a reproducible Python workflow in Visual Studio Code that identifies missing milk production records, fills gaps using an appropriate prediction method, and evaluates the accuracy of the results. The final project will also explain the strengths and limitations of the chosen method and provide a clear record of how the original data was processed.
