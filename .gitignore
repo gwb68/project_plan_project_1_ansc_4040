@@ -201,6 +201,8 @@ cython_debug/
 #   and can be added to the global gitignore or merged into this file. However, if you prefer, 
 
 # Project dataset
+*.csv
+*.html
 project_1_ANSC_4040_dataset.csv
 Data_set_prep_assignment_1.csv
 project_1_ANSC_4040_dataset_no_missing_avgmilkflow.csv
