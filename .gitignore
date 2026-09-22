@@ -203,7 +203,10 @@ cython_debug/
 # Project dataset
 project_1_ANSC_4040_dataset.csv
 Data_set_prep_assignment_1.csv
-
+project_1_ANSC_4040_dataset_no_missing_avgmilkflow.csv
+project_1_data_profiling_report.html
+project_1_ANSC_dataset_deduplicated.csv
+proj1_data_profile.html
 
 #   you could uncomment the following to ignore the entire vscode folder
 # .vscode/
