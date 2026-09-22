@@ -10,11 +10,11 @@ The purpose of this project is to fill in missing milk production data in a dair
 
 ## Strategy and Model Choice
 
-I will begin by exploring the dataset using pandas to identify null values, understand the data structure, and organize records by cow ID and date or milking time. I will examine each cow's milk production history to determine how frequently missing values occur and how long the gaps are.
+I will first gather and organize the raw milk production data. I will then process and clean the data using Python and pandas by identifying missing values, removing or addressing incorrect records, and organizing the data by cow ID and milking time. After the data is cleaned, I will split the available data into training and testing sets so I can evaluate how accurately the model predicts milk production values that are already known.
 
-My main strategy will be to use interpolation for short gaps in a cow's production history. For example, if a cow produces 70 pounds of milk before a missing record and 74 pounds afterward, the missing value could be estimated at approximately 72 pounds. This approach uses the individual cow's production patterns rather than assuming all cows produce the same amount.
+My main goal is to create a prediction model that uses the available milk flow data to estimate missing milk production values. The model will learn the production patterns of each cow and use those patterns to predict values when a sensor fails to record milk production. Instead of simply filling in missing values with an average, the model will use the surrounding and previous milk production data to make a more informed prediction.
 
-For longer gaps, I will compare other methods, such as using the cow's average production during a similar period or a regression model based on available production records. I will compare these methods and choose the one that produces the most accurate predictions. I will also consider whether the model should account for factors such as date, milking time, lactation stage, or previous milk production, depending on which information is available in the dataset.
+The final goal is to use these predictions to create a continuous lactation curve for each cow, even when some milk production records are missing. I will compare the predicted values to the actual values in the testing data using an accuracy measure such as mean absolute error (MAE). Based on the results, I will determine whether the model is accurately predicting missing milk production and whether it can be reliably applied to the actual missing records in the dataset.
 
 ## Timeline
 
