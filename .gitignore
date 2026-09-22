@@ -158,6 +158,7 @@ env.bak/
 venv.bak/
 
 # Spyder project settings
+data_set_prep_assignment_1.csv
 .spyderproject
 .spyproject
 
