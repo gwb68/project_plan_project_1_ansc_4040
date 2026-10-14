@@ -4,42 +4,89 @@
 **Project Timeline:** September 15 – October 6, 2026  
 **Development Environment:** Local computer using Visual Studio Code (VS Code) and Python
 
-## Project Purpose
+### Project objective
 
-The purpose of this project is to fill in missing milk production data in a dairy farm dataset. Sometimes sensors used to identify cows through their ear tags malfunction or break, which causes gaps in the data. These missing records make it difficult to accurately track individual cow production. My goal is to develop a reliable method for estimating missing milk production values based on the cow's previous and surrounding production records.
+This part of the project predicts an animal identifier for each milking record in a dataset. The model uses milk-production and milking-session measurements as input features and predicts the animal number associated with the record.
 
-## Strategy and Model Choice
+The model predicts **animal identity**; it does not predict milk yield. The training data calls the target `AnimalNumber`. In the prediction output, that predicted value is labeled `AnimalId`.
 
-I will first gather and organize the raw milk production data. I will then process and clean the data using Python and pandas by identifying missing values, removing or addressing incorrect records, and organizing the data by cow ID and milking time. After the data is cleaned, I will split the available data into training and testing sets so I can evaluate how accurately the model predicts milk production values that are already known.
+### Data sources and preparation
 
-My main goal is to create a prediction model that uses the available milk flow data to estimate missing milk production values. The model will learn the production patterns of each cow and use those patterns to predict values when a sensor fails to record milk production. Instead of simply filling in missing values with an average, the model will use the surrounding and previous milk production data to make a more informed prediction.
+The workflow uses two datasets:
 
-The final goal is to use these predictions to create a continuous lactation curve for each cow, even when some milk production records are missing. I will compare the predicted values to the actual values in the testing data using an accuracy measure such as mean absolute error (MAE). Based on the results, I will determine whether the model is accurately predicting missing milk production and whether it can be reliably applied to the actual missing records in the dataset.
+- **Labeled training data:** `project_1_ANSC_4040_dataset.csv`, which contains `AnimalNumber` labels.
+- **Updated records to predict:** `PracticeTest.csv`, which contains `MilkingId` and session measurements but no animal identifier.
 
-## Timeline
+The updated data is cleaned in `data_inspection.ipynb` by:
 
-| Date | Project Task |
-|---|---|
-| September 15–16 | Understand and prepare the data. Identify the dataset, inspect its columns, locate null values, and organize records by cow ID and date. |
-| September 17–18 | Explore the data. Analyze individual cow milk production patterns, examine missing-data gaps, and create visualizations. |
-| September 19–22 | Develop the filling strategy. Create a baseline using cow-level averages and test interpolation for short gaps. Investigate regression or other prediction methods for longer gaps. |
-| September 23–26 | Test and compare models. Hide known milk production values, predict them using each method, and compare the estimates with the actual values. |
-| September 27–30 | Finalize the data pipeline. Apply the selected method to the actual missing records, document the process, and preserve the original data. |
-| October 1–5 | Review the results, create final visualizations, explain limitations, and prepare the final report or presentation. |
-| October 6 | Submit the completed mini project. |
+1. Removing exact duplicate rows.
+2. Converting the five milk-production/session features to numeric values, coercing invalid values to missing:
+   - `Avgmilkflow`
+   - `Flow30_60Session`
+   - `YieldFirst2Min_Session`
+   - `YieldSession`
+   - `DurationSession_sec`
+3. Removing rows missing `Avgmilkflow` or any of the five model features.
+4. For each of those five features, removes rows more than two standard deviations from that feature's mean. The filters are applied sequentially.
+5. Saves the cleaned records as `PracticeTest_cleaned.csv`.
 
-## Testing
+For the current replacement file, inspection started with **1,701,003 rows**. It removed **29 rows** with missing `Avgmilkflow`; it found no exact duplicate rows and no further rows missing model features. The sequential outlier filters removed additional rows, leaving **1,404,392 cleaned records**. The original `PracticeTest.csv` is left unchanged.
 
-To test the accuracy of my method, I will use artificial missingness. I will temporarily remove some milk production values that are already known and use the model to predict them. I can then compare the predicted values with the original measurements using mean absolute error (MAE). MAE will show how many pounds of milk the predictions differ from the actual values on average.
+The labeled training data is loaded separately by the KNN notebook. Rows without an `AnimalNumber` label are excluded. The model uses a random sample of up to **500,000 labeled rows** for training and evaluation.
 
-I will test different sizes of missing-data gaps and compare multiple methods to determine which one performs best. I will also make sure that the model does not use future information that would not have been available when a prediction is actually needed. This will help me determine whether the method is reliable for real sensor-related data gaps.
+### Features and target
 
-## Data Lineage
+The target is `AnimalNumber` from the labeled training data. The predicted output column is named `PredictedAnimalId`, and is renamed to `AnimalId` in the two-column mapping file.
 
-I will keep track of where the dataset came from, when it was downloaded, and how the data was cleaned and processed. I will preserve the original dataset and create separate versions for the cleaned data and the completed data.
+The notebook selects features that are both present and usable in the training and prediction data. For this run, it used:
 
-Each estimated milk production value will be labeled as an estimate rather than an actual sensor measurement. I will retain the cow ID, date, and milking time, along with the method used to fill the gap. I will also document any assumptions, changes, or limitations. This will make it possible to trace each prediction back to the original data and distinguish actual measurements from estimated values.
+- `Avgmilkflow`
+- `Flow30_60Session`
+- `YieldFirst2Min_Session`
+- `YieldSession`
+- `DurationSession_sec`
+- `milking`
 
-## Expected Outcome
+Although `EventDate` is present in the replacement records, it is not used because it is not available in the selected training dataset. Other metadata fields are not used when they have no usable values in the replacement data.
 
-By October 6, I expect to have a reproducible Python workflow in Visual Studio Code that identifies missing milk production records, fills gaps using an appropriate prediction method, and evaluates the accuracy of the results. The final project will also explain the strengths and limitations of the chosen method and provide a clear record of how the original data was processed.
+### Model choice and preprocessing
+
+The model is a **K-Nearest Neighbors (KNN) classifier** implemented with scikit-learn. KNN assigns a class based on nearby training examples in feature space. It is used here to select an animal identifier from the animal numbers present in the training data.
+
+The notebook processes numeric features with a pipeline that:
+
+1. Imputes missing values using the training-set median and adds missingness indicators.
+2. Standardizes feature scales with `StandardScaler`, since KNN uses distances between feature values.
+3. Applies `KNeighborsClassifier` to assign an animal-number class.
+
+The notebook also contains categorical-feature preprocessing for columns that require it; no categorical features were used in this run.
+
+### Training, evaluation, and hyperparameters
+
+The labeled data is split into training and test subsets using an **80/20 random split** with `random_state=42`. The classifier is fitted on the training portion and evaluated on the held-out portion.
+
+The configured KNN hyperparameter is **`n_neighbors=20`**. The notebook uses up to **500,000 training rows** and predicts in batches of **25,000 records**.
+
+**Hyperparameter tuning was not performed.** The value of `n_neighbors` was fixed at 20; the notebook does not compare multiple values or select parameters through cross-validation. The reported metric is accuracy on the random holdout split.
+
+For the current run:
+
+- Training sample: **500,000 rows**
+- Animal-number classes represented in the training sample: **8,930**
+- Holdout accuracy: **0.0037 (0.37%)**
+
+### Outputs
+
+The notebook produces:
+
+- `PracticeTest_cleaned.csv` — cleaned updated records used for prediction.
+- `PracticeTest_knn_predictions.csv` — the cleaned records with a `PredictedAnimalId` column added.
+- `MilkingId_AnimalId_predictions.csv` — the mapping with exactly two columns: `MilkingId` and `AnimalId`.
+
+The current mapping contains **1,404,392 rows**, one for each cleaned record. The `AnimalId` in this mapping is the model's prediction, not a ground-truth label from the updated dataset.
+
+### Limitations and interpretation
+
+The holdout accuracy of **0.37% is low**. This means the current model has not demonstrated reliable animal identification. The mapping should be treated as experimental output, not as verified animal-to-milking assignments.
+
+The target has thousands of possible animal-number classes, while the model uses only the listed session measurements. More evaluation and model development are needed before relying on its predictions. In particular, future work should compare KNN settings and alternative methods, establish suitable baselines, and evaluate generalization using a split that avoids overly optimistic results from related records appearing in both training and test sets.
